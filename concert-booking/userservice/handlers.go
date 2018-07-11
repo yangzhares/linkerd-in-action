@@ -30,7 +30,7 @@ type concert struct {
 	ConcertName string `json:"concert_name"`
 	Singer      string `json:"singer"`
 	Location    string `json:"location"`
-	//	Street      string `json:"street"` //v2
+	Street      string `json:"street"` //v2
 }
 
 type result struct {

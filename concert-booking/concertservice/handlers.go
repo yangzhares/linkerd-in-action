@@ -1,13 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
-	uuid "github.com/satori/go.uuid"
+	//uuid "github.com/satori/go.uuid"
 
 	"github.com/yangzhares/linkerd-in-action/concert-booking/db"
 	"github.com/yangzhares/linkerd-in-action/concert-booking/util"
@@ -18,7 +19,7 @@ type ConcertHandler struct {
 }
 
 //v2
-//var uuidGenerator = "http://httpbin.org/uuid"
+var uuidGenerator = "http://httpbin.org/uuid"
 
 func NewConcertHandler(db *db.DB) *ConcertHandler {
 	return &ConcertHandler{
@@ -61,25 +62,25 @@ func (h *ConcertHandler) AddConcert(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// v1
-		concert.ID = uuid.NewV4().String()
+		//concert.ID = uuid.NewV4().String()
 
 		//v2
-		/*
-			resp, err := http.Get(uuidGenerator)
-			if err != nil {
-				util.ResponseWithError(w, http.StatusInternalServerError, fmt.Sprintf("UUID Generator error: %v", err))
-			}
 
-			defer resp.Body.Close()
-			type stubID struct {
-				UUID string `json:"uuid"`
-			}
-			var id stubID
+		resp, err := http.Get(uuidGenerator)
+		if err != nil {
+			util.ResponseWithError(w, http.StatusInternalServerError, fmt.Sprintf("UUID Generator error: %v", err))
+		}
 
-			if err := json.NewDecoder(resp.Body).Decode(&id); err == nil {
-				concert.ID = id.UUID
-			}
-		*/
+		defer resp.Body.Close()
+		type stubID struct {
+			UUID string `json:"uuid"`
+		}
+		var id stubID
+
+		if err := json.NewDecoder(resp.Body).Decode(&id); err == nil {
+			concert.ID = id.UUID
+		}
+
 	}
 
 	dbconn := h.DB.Exec("INSERT INTO concerts(id, concert_name, singer, start_date, end_date, location, street) VALUES(?, ?, ?, ?, ?, ?, ?)", concert.ID, concert.ConcertName, concert.Singer, concert.StartDate, concert.EndDate, concert.Location, concert.Street)
