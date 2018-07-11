@@ -1,0 +1,6 @@
+FROM mysql:5.7
+
+WORKDIR mysql
+COPY mysql-check.sh .
+RUN chmod 755 mysql-check.sh && apt-get update && apt-get install -y net-tools
+HEALTHCHECK --interval=10s --timeout=3s CMD bash mysql-check.sh

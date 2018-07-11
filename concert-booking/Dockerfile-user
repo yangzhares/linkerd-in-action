@@ -1,0 +1,23 @@
+FROM golang:1.9-alpine3.7 as builder
+
+WORKDIR /go/src/github.com/yangzhares/linkerd-in-action/concert-booking
+COPY . .
+RUN apk update \
+    && apk add --no-cache git \
+    && go get -u github.com/golang/dep/cmd/dep \
+    && cd userservice \
+    && go build -v -o user
+
+FROM alpine:3.7
+
+WORKDIR /app
+COPY --from=builder /go/src/github.com/yangzhares/linkerd-in-action/concert-booking/userservice/user  .
+COPY --from=builder /go/src/github.com/yangzhares/linkerd-in-action/concert-booking/userservice/config.json .
+
+RUN apk update \
+    && apk add --no-cache wget bash ca-certificates\
+    && wget -O /dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
+    && chmod 755 /dumb-init
+
+ENTRYPOINT ["/dumb-init", "--"]
+CMD ["/app/user"]

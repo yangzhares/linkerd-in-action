@@ -1,0 +1,8 @@
+{
+    "service_endpoint": "0.0.0.0:8182",
+    "dbname": "concert",
+    "user": "root",
+    "password": "pass",
+    "dbendpoint": "localhost:3306"
+  }
+  

@@ -1,0 +1,36 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"log"
+	"os"
+)
+
+var f string
+
+func init() {
+	flag.StringVar(&f, "config", "config.json", "booking service config file")
+	flag.StringVar(&f, "c", "config.json", "booking service config file")
+	flag.Usage = usage
+	flag.Parse()
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+	var help = `
+   -c= (--config=)       Booking service config file(default: config.json)
+`
+
+	fmt.Fprint(os.Stderr, help)
+}
+
+func main() {
+	conf, err := InitConfig(f)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Fatal(ServeAPI(conf))
+}

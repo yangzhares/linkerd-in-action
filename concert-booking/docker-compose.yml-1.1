@@ -1,0 +1,85 @@
+version: "2.1"
+services:
+  user:
+    environment:
+      DBNAME: demo
+      DBUSER: test
+      DBPASSWORD: pass
+      DBENDPOINT: mysql:3306
+      BOOKING_SERVICE_ADDR: booking:8181
+      CONCERT_SERVICE_ADDR: concert:8182
+    build:
+      context: .
+      dockerfile: Dockerfile-user-1.1
+    image: zhanyang/user:1.1
+    volumes:
+      - ./startup/user/linkerd.yml:/linkerd.yml
+    ports:
+      - "8180:8180"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    container_name: user
+    networks:
+      - mynet1
+
+  booking:
+    environment:
+      DBNAME: demo
+      DBUSER: test
+      DBPASSWORD: pass
+      DBENDPOINT: mysql:3306
+      CONCERT_SERVICE_ADDR: concert:8182
+    build:
+      context: .
+      dockerfile: Dockerfile-booking-1.1
+    image: zhanyang/booking:1.1
+    volumes:
+      - ./startup/booking/linkerd.yml:/linkerd.yml
+    ports:
+      - "8181:8181"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    container_name: booking
+    networks:
+      - mynet1
+
+  concert:
+    environment:
+      DBNAME: demo
+      DBUSER: test
+      DBPASSWORD: pass
+      DBENDPOINT: mysql:3306
+    build:
+      context: .
+      dockerfile: Dockerfile-concert-1.1
+    image: zhanyang/concert:1.1
+    volumes:
+      - ./startup/concert/linkerd.yml:/linkerd.yml
+    ports:
+      - "8182:8182"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    container_name: concert
+    networks:
+      - mynet1
+
+  mysql:
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: demo
+      MYSQL_USER: test
+      MYSQL_PASSWORD: pass
+    build:
+      context: .
+      dockerfile: Dockerfile-mysql
+    image: zhanyang/mysql:5.7
+    container_name: mysql
+    networks:
+      - mynet1
+
+networks:
+  mynet1:
+    driver: bridge
