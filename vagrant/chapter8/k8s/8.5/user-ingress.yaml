@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: user
+  annotations:
+    kubernetes.io/ingress.class: "linkerd"
+spec:
+  rules:
+  - host: user
+    http:
+      paths:
+      - backend:
+          serviceName: user
+          servicePort: http

@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+data:
+  config.json: |-
+    {
+      "service_endpoint": "0.0.0.0:8180",
+      "dbname": "demo",
+      "user": "demo",
+      "password": "pass",
+      "dbendpoint": "mysql.default:3306",
+      "booking_service_addr": "booking.default:8181",
+      "concert_service_addr": "concert.default:8182"
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  labels:
+    app: user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user
+  template:
+    metadata:
+      labels:
+        app: user
+    spec:
+      containers:
+      - name: user
+        image: zhanyang/user:1.0
+        ports:
+        - containerPort: 8180
+        args:
+        - "/app/user"
+        - "-c"
+        - "/etc/user/config.json"
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8180
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: user-config
+          mountPath: /etc/user
+          readOnly: true
+      volumes:
+      - name: user-config
+        configMap:
+          name: user-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+spec:
+  selector:
+    app: user
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8180

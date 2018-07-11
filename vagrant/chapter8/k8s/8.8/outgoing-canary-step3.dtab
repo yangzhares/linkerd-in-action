@@ -1,0 +1,6 @@
+/k8s          =>   /#/io.l5d.k8s.out;
+/portNsSvc    =>   /#/portNsSvcToK8s;
+/host         =>   /portNsSvc/http/default;
+/host         =>   /portNsSvc/http;
+/host/user    =>   /portNsSvc/http/default/user-v2;
+/svc          =>   /$/io.buoyant.http.domainToPathPfx/host;

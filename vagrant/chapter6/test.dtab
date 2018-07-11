@@ -1,0 +1,4 @@
+/active      => /#/io.l5d.consul/dc2/active;
+/baking      => /#/io.l5d.consul/dc2/baking;
+/svc/active  => /active;
+/svc/baking  => /baking;

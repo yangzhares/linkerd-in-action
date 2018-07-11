@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: booking-config
+data:
+  config.json: |-
+    {
+      "service_endpoint": "0.0.0.0:8181",
+      "dbname": "demo",
+      "user": "demo",
+      "password": "pass",
+      "dbendpoint": "mysql.default:3306",
+      "concert_service_addr": "concert.default:8182"
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: booking
+  labels:
+    app: booking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: booking
+  template:
+    metadata:
+      labels:
+        app: booking
+    spec:
+      containers:
+      - name: booking
+        image: zhanyang/booking:1.0
+        ports:
+        - containerPort: 8181
+        args:
+        - "/app/booking"
+        - "-c"
+        - "/etc/booking/config.json"
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8181
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        volumeMounts:
+        - name: booking-config
+          mountPath: /etc/booking
+          readOnly: true
+      volumes:
+      - name: booking-config
+        configMap:
+          name: booking-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: booking
+spec:
+  selector:
+    app: booking
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 8181

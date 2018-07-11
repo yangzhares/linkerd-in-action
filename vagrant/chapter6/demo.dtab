@@ -1,0 +1,3 @@
+/consul => /#/io.l5d.consul/dc1;
+/host   => /consul;
+/svc    => /$/io.buoyant.http.subdomainOfPfx/service.consul/host;

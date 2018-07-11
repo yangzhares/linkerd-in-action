@@ -1,0 +1,22 @@
+admin:
+  port: 9990
+  ip: 0.0.0.0
+
+routers:
+- protocol: http
+  label: outgoing
+  interpreter:
+    kind: io.l5d.mesh
+    dst: /$/inet/namerd.service.consul/4321
+    root: /demo
+  httpAccessLog: /tmp/access_outgoing.log
+  servers:
+  - port: 4140
+    ip: 0.0.0.0
+
+telemetry:
+- kind: io.l5d.recentRequests
+  sampleRate: 0.01
+
+usage:
+  enabled: false

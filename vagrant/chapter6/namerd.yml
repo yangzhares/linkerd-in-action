@@ -1,0 +1,27 @@
+admin:
+  ip: 0.0.0.0
+  port: 9991
+
+storage:
+  kind: io.l5d.consul
+  host: 127.0.0.1
+  port: 8500
+  pathPrefix: /namerd/dtabs
+  datacenter: dc1
+
+namers:
+- kind: io.l5d.consul
+  prefix: /io.l5d.consul
+  host: 127.0.0.1
+  port: 8500
+  includeTag: false
+  setHost: false
+  useHealthCheck: true
+
+interfaces:
+- kind: io.l5d.mesh            # Linkerd通过该接口与Namerd通讯进行名字解析
+  ip: 0.0.0.0
+  port: 4321
+- kind: io.l5d.httpController  # 通过该接口实现与Namerd的HTTP API通讯
+  ip: 0.0.0.0
+  port: 4180

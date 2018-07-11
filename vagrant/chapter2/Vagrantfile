@@ -1,0 +1,11 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "centos/7"
+
+  # linkerd router on port 4140
+  config.vm.network "forwarded_port", guest: 4140, host: 4140
+  # linkerd admin on port 9990
+  config.vm.network "forwarded_port", guest: 9990, host: 9990
+end
